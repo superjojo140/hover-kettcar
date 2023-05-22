@@ -201,22 +201,29 @@ void loop(void)
 
   if (direction == FWD)
   {
-
-    if (speed < lastSpeed) // Slowdown Forward
+    if (directionRaw == LOW && speed <= lastSpeed)
     {
-      if (!wasFast || lastSpeed <= POWER_SLOWDOWN_TRIGGER || directionRaw == LOW)
-      { // Power Slowdown if under SLOWDOWN_TRIGGER or if direction switch was set to LOW (=Backwards) or was not fast
-        speed = max(lastSpeed - POWER_SLOWDOWN_STEP, HOVER_MIN);
-      }
-      else
-      {
-        speed = max(lastSpeed - FWD_SLOWDOWN, HOVER_MIN);
-      }
+      speed = lastSpeed;//keep speed
     }
-
-    if (speed > lastSpeed) // Accelerate Forward
+    else
     {
-      speed = min(lastSpeed + FWD_ACCELERATE, HOVER_MAX);
+
+      if (speed < lastSpeed) // Slowdown Forward
+      {
+        if (!wasFast || lastSpeed <= POWER_SLOWDOWN_TRIGGER)
+        { // Power Slowdown if under SLOWDOWN_TRIGGER or if direction switch was set to LOW (=Backwards) or was not fast
+          speed = max(lastSpeed - POWER_SLOWDOWN_STEP, HOVER_MIN);
+        }
+        else
+        {
+          speed = max(lastSpeed - FWD_SLOWDOWN, HOVER_MIN);
+        }
+      }
+
+      if (speed > lastSpeed) // Accelerate Forward
+      {
+        speed = min(lastSpeed + FWD_ACCELERATE, HOVER_MAX);
+      }
     }
   }
   else if (direction == BWD)
@@ -244,5 +251,4 @@ void loop(void)
   Serial.print(" Direction: ");
   Serial.println(direction);
   delay(2);
-
 }
